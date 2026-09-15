@@ -1,0 +1,21 @@
+{
+  "short_name": "FROMEX Tech",
+  "name": "FROMEX Health Tech Management System",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#0057b8",
+  "display": "standalone",
+  "orientation": "portrait"
+}
