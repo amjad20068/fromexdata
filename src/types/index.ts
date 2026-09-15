@@ -224,6 +224,27 @@ export interface Reimbursement {
   created_at: string;
 }
 
+export type ContractType = 
+  | 'SaaS Subscription' 
+  | 'Software AMC' 
+  | 'Custom Development' 
+  | 'Cloud API & AI Tokens' 
+  | 'Enterprise License';
+
+export type BillingFrequency = 
+  | 'Monthly' 
+  | 'Quarterly' 
+  | 'Annual' 
+  | 'Milestone';
+
+export type InvoicePaymentStatus = 
+  | 'Draft' 
+  | 'Sent' 
+  | 'Paid' 
+  | 'Partially Paid' 
+  | 'Overdue' 
+  | 'Cancelled';
+
 export interface InvoiceItem {
   id?: string;
   description: string;
@@ -248,12 +269,28 @@ export interface Invoice {
   igst: number;
   discount: number;
   grand_total: number;
-  payment_status: 'Draft' | 'Sent' | 'Paid' | 'Partially Paid' | 'Overdue' | 'Cancelled';
-  contract_type?: 'SaaS Subscription' | 'Software AMC' | 'Custom Development' | 'Cloud API & AI Tokens' | 'Enterprise License';
-  billing_frequency?: 'Monthly' | 'Quarterly' | 'Annual' | 'Milestone';
+  payment_status: InvoicePaymentStatus;
+  contract_type?: ContractType;
+  billing_frequency?: BillingFrequency;
   notes?: string;
   items?: InvoiceItem[];
   created_at: string;
+}
+
+export interface InvoiceFormData {
+  invoice_number: string;
+  invoice_date: string;
+  due_date: string;
+  customer_name: string;
+  customer_email: string;
+  customer_address: string;
+  gst_number: string;
+  discount: number;
+  gst_rate: number;
+  contract_type: ContractType;
+  billing_frequency: BillingFrequency;
+  payment_status: InvoicePaymentStatus;
+  notes: string;
 }
 
 export interface CompanySettings {

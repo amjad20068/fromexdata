@@ -16,7 +16,7 @@ import {
   Repeat
 } from 'lucide-react';
 import { api } from '../api/client';
-import { CompanyAccount, AccountTransaction } from '../types';
+import { CompanyAccount, AccountTransaction, Invoice } from '../types';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
@@ -82,7 +82,7 @@ export const Accounts: React.FC = () => {
     }
   };
 
-  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
 
   useEffect(() => {
     loadData();

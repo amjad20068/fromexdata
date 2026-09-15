@@ -276,6 +276,8 @@ export function initDatabase() {
       discount REAL DEFAULT 0,
       grand_total REAL DEFAULT 0,
       payment_status TEXT DEFAULT 'Sent',
+      contract_type TEXT DEFAULT 'SaaS Subscription',
+      billing_frequency TEXT DEFAULT 'Annual',
       notes TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -341,4 +343,12 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_audit_module ON audit_logs(module);
     CREATE INDEX IF NOT EXISTS idx_transactions_acc ON account_transactions(account_id);
   `);
+
+  // Ensure invoice contract_type and billing_frequency columns exist in existing databases
+  try {
+    db.prepare("ALTER TABLE invoices ADD COLUMN contract_type TEXT DEFAULT 'SaaS Subscription'").run();
+  } catch {}
+  try {
+    db.prepare("ALTER TABLE invoices ADD COLUMN billing_frequency TEXT DEFAULT 'Annual'").run();
+  } catch {}
 }

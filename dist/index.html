@@ -1,27 +1,1461 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#0057b8" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="FROMEX Management" />
-    
-    <title>FROMEX Health Tech | Internal Management System</title>
-    <meta name="description" content="Official Internal Management Platform for FROMEX Health Tech - Employees, Attendance, Payroll, Accounts, and Company Management." />
-    
-    <!-- Google Fonts Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="manifest" href="/manifest.json" />
-    <script type="module" crossorigin src="/assets/index-D_-DPRl-.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BZfe3Td5.css">
-  </head>
-  <body class="bg-[#f4f7f9] text-[#2d3748] dark:bg-[#0f172a] dark:text-[#e2e8f0] font-sans antialiased transition-colors duration-200">
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FROMEX HEALTH TECH | Internal Company Management</title>
+  <meta name="description" content="Official Internal Management System for FROMEX Health Tech - Attendance, Payroll, Accounts, and Ledger Management." />
+  
+  <link rel="icon" type="image/png" href="/assets/favicon-DdMPVHmu.png" />
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- SheetJS (xlsx) for Excel Import, Export & Template Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" crossorigin href="/assets/index-Cj1o71oT.css">
+</head>
+<body>
+
+  <!-- ==========================================================
+       TOP NAVBAR (Strictly Centered Branding)
+       ========================================================== -->
+  <header class="top-navbar">
+    <!-- Left Section: Sidebar Toggle & Quick Label -->
+    <div class="navbar-left">
+      <button id="btn-sidebar-toggle" class="nav-icon-btn" title="Toggle Navigation Sidebar" aria-label="Toggle Sidebar">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- Center Section: [LOGO] FROMEX HEALTH TECH (Guaranteed 50% screen center) -->
+    <div class="navbar-center" id="navbar-brand-container">
+      <img src="/assets/logo-DpnQJfIr.png" alt="FROMEX Logo" class="brand-logo" id="header-logo-img" />
+      <span class="brand-title" id="header-company-name">FROMEX HEALTH TECH</span>
+    </div>
+
+    <!-- Right Section: Live Date, Theme Toggle, User Profile -->
+    <div class="navbar-right">
+      <div class="nav-date-badge" id="live-date-badge" title="Current Date & Time">
+        <i class="fa-regular fa-calendar"></i>
+        <span id="live-date-text">Loading...</span>
+      </div>
+
+      <button id="btn-theme-toggle" class="nav-icon-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+        <i class="fa-solid fa-moon" id="theme-icon"></i>
+      </button>
+
+      <div class="user-badge" id="btn-user-profile" title="Administrator Profile">
+        <div class="user-avatar">AD</div>
+        <span class="user-name">Admin</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       MAIN APP CONTAINER (Sidebar + Dynamic Viewport)
+       ========================================================== -->
+  <div class="app-container">
+    <!-- Sidebar Overlay for Mobile Screens -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="app-sidebar">
+      <nav class="sidebar-nav">
+        <!-- Main Dashboard -->
+        <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <i class="fa-solid fa-chart-line"></i>
+          <span class="nav-text">Dashboard</span>
+        </a>
+
+        <!-- Attendance Section -->
+        <div class="sidebar-header">Attendance</div>
+        <a class="nav-item" data-view="attendance-list" id="nav-attendance-list">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span class="nav-text">Attendance List</span>
+        </a>
+        <a class="nav-item" data-view="attendance-members" id="nav-attendance-members">
+          <i class="fa-solid fa-users"></i>
+          <span class="nav-text">Members</span>
+        </a>
+
+        <!-- Accounting Section -->
+        <div class="sidebar-header">Accounting</div>
+        <a class="nav-item" data-view="accounting-list" id="nav-accounting-list">
+          <i class="fa-solid fa-receipt"></i>
+          <span class="nav-text">Accounting List</span>
+        </a>
+        <a class="nav-item" data-view="accounting-members" id="nav-accounting-members">
+          <i class="fa-solid fa-id-card-clip"></i>
+          <span class="nav-text">Members</span>
+        </a>
+        <a class="nav-item" data-view="company-accounts" id="nav-company-accounts">
+          <i class="fa-solid fa-building-columns"></i>
+          <span class="nav-text">Company Accounts</span>
+        </a>
+
+        <!-- Settings & System -->
+        <div class="sidebar-header">System</div>
+        <a class="nav-item" data-view="settings" id="nav-settings">
+          <i class="fa-solid fa-gear"></i>
+          <span class="nav-text">Settings & Backup</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status-pill">
+          <span class="status-indicator-dot"></span>
+          <span class="nav-text">System Active &bull; Offline Storage</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport" id="main-viewport">
+
+      <!-- Print Header (Visible only when printing) -->
+      <div class="print-only-header">
+        <h2 id="print-company-name">FROMEX HEALTH TECH</h2>
+        <p id="print-sheet-title">Internal Management Report</p>
+        <p id="print-timestamp" style="font-size: 8pt; color: #555;"></p>
+        <hr style="margin: 8px 0;" />
+      </div>
+
+      <!-- ==========================================================
+           1. DASHBOARD VIEW
+           ========================================================== -->
+      <section class="view-pane active" id="view-dashboard">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-gauge-high"></i> Company Dashboard</h1>
+            <p>Real-time corporate overview of attendance, workforce operations, and accounting.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" id="dash-btn-add-member">
+              <i class="fa-solid fa-user-plus"></i> Add Member
+            </button>
+            <button class="btn btn-success" id="dash-btn-mark-attendance">
+              <i class="fa-solid fa-clipboard-check"></i> Mark Attendance
+            </button>
+            <button class="btn btn-secondary" id="dash-btn-add-accounting">
+              <i class="fa-solid fa-plus-circle"></i> Add Transaction
+            </button>
+            <button class="btn btn-secondary" id="dash-btn-add-account">
+              <i class="fa-solid fa-building-columns"></i> Add Account
+            </button>
+          </div>
+        </div>
+
+        <!-- Clean Empty State Banner on Dashboard (Shows when 0 records exist) -->
+        <div id="dash-empty-welcome-banner" style="display: none; background: linear-gradient(135deg, var(--primary-light), var(--bg-surface)); border: 2px dashed var(--primary); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+          <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; color: var(--primary); margin-bottom: 0.6rem;"></i>
+          <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Company Database is Clean & Ready</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto 1.25rem auto;">
+            All previous data has been cleared. Select an option below to begin adding your own company members, accounts, and attendance entries:
+          </p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-lg" id="banner-btn-add-member">
+              <i class="fa-solid fa-user-plus"></i> 1. Add Employee Member
+            </button>
+            <button class="btn btn-secondary btn-lg" id="banner-btn-add-account">
+              <i class="fa-solid fa-building-columns"></i> 2. Add Company Account
+            </button>
+            <button class="btn btn-secondary btn-lg" id="banner-btn-reset-demo">
+              <i class="fa-solid fa-rotate-left"></i> Load Sample Demo Data
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance Summary Row -->
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+          <i class="fa-solid fa-user-clock" style="color: var(--primary);"></i> Attendance Summary (Today)
+        </h3>
+        <div class="dashboard-grid">
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--primary-light); color: var(--primary);">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Total Members</span>
+              <span class="metric-value" id="dash-total-members">0</span>
+              <span class="metric-subtext">Active company staff</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-present-bg); color: var(--income-color);">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Present Today</span>
+              <span class="metric-value" id="dash-present-today" style="color: var(--income-color);">0</span>
+              <span class="metric-subtext">Checked in today</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-absent-bg); color: var(--expense-color);">
+              <i class="fa-solid fa-user-xmark"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Absent Today</span>
+              <span class="metric-value" id="dash-absent-today" style="color: var(--expense-color);">0</span>
+              <span class="metric-subtext">Unrecorded / Absent</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-late-bg); color: #d97706;">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Late Today</span>
+              <span class="metric-value" id="dash-late-today" style="color: #d97706;">0</span>
+              <span class="metric-subtext">Checked in after office start</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-leave-bg); color: #0284c7;">
+              <i class="fa-solid fa-plane-departure"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">On Leave</span>
+              <span class="metric-value" id="dash-on-leave" style="color: #0284c7;">0</span>
+              <span class="metric-subtext">Approved leaves</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accounting Summary Row -->
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+          <i class="fa-solid fa-vault" style="color: var(--secondary);"></i> Accounting & Treasury Summary
+        </h3>
+        <div class="dashboard-grid">
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-present-bg); color: var(--income-color);">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Total Income</span>
+              <span class="metric-value" id="dash-total-income" style="color: var(--income-color);">₹0</span>
+              <span class="metric-subtext">Receipts & revenue</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-absent-bg); color: var(--expense-color);">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Total Expense</span>
+              <span class="metric-value" id="dash-total-expense" style="color: var(--expense-color);">₹0</span>
+              <span class="metric-subtext">Operational expenses</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--status-halfday-bg); color: var(--salary-color);">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Total Salary</span>
+              <span class="metric-value" id="dash-total-salary" style="color: var(--salary-color);">₹0</span>
+              <span class="metric-subtext">Disbursed payroll</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap" style="background-color: var(--primary-light); color: var(--balance-color);">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="metric-info">
+              <span class="metric-label">Current Balance</span>
+              <span class="metric-value" id="dash-current-balance" style="color: var(--balance-color);">₹0</span>
+              <span class="metric-subtext">Across all accounts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Tables Split View -->
+        <div class="dashboard-split-grid">
+          <!-- Recent Attendance -->
+          <div class="settings-card" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+              <h3 style="border: none; margin: 0; padding: 0;">
+                <i class="fa-solid fa-clock-rotate-left"></i> Today's Attendance
+              </h3>
+              <button class="btn btn-secondary btn-sm" id="btn-view-all-attendance">View Full Sheet</button>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="excel-table" style="font-size: 0.8rem;">
+                <thead>
+                  <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-attendance-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Accounting Entries -->
+          <div class="settings-card" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+              <h3 style="border: none; margin: 0; padding: 0;">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Recent Transactions
+              </h3>
+              <button class="btn btn-secondary btn-sm" id="btn-view-all-accounting">View Full Ledger</button>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="excel-table" style="font-size: 0.8rem;">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-accounting-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           2. ATTENDANCE LIST VIEW (MOST IMPORTANT PAGE)
+           ========================================================== -->
+      <section class="view-pane" id="view-attendance-list">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-calendar-days"></i> Company Attendance Sheet</h1>
+            <p>Excel-style corporate attendance sheet with real-time check-in, check-out, and working hour calculations.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" id="btn-add-attendance-row">
+              <i class="fa-solid fa-plus"></i> Add Attendance
+            </button>
+            <button class="btn btn-excel" id="btn-export-attendance-excel">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-export-attendance-csv">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+            <button class="btn btn-secondary" id="btn-import-attendance-excel">
+              <i class="fa-solid fa-file-arrow-up"></i> Import Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-download-attendance-template">
+              <i class="fa-solid fa-download"></i> Template
+            </button>
+            <button class="btn btn-secondary" id="btn-print-attendance">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Check-In / Check-Out Action Dock -->
+        <div class="quick-attendance-dock">
+          <div class="dock-title-group">
+            <h3><i class="fa-solid fa-fingerprint" style="color: var(--primary);"></i> Live Attendance Desk</h3>
+            <p>Instant Check-in and Check-out for staff for today (<span id="dock-today-display"></span>)</p>
+          </div>
+          <div class="dock-controls">
+            <div class="dock-select-row">
+              <select id="quick-employee-select" class="form-control filter-select">
+                <!-- Populated with Active Members -->
+              </select>
+              <button class="btn btn-secondary btn-sm" id="btn-quick-add-member" title="Add new employee member">
+                <i class="fa-solid fa-user-plus"></i> + Member
+              </button>
+            </div>
+            <button class="btn btn-success btn-lg" id="btn-quick-checkin">
+              <i class="fa-solid fa-right-to-bracket"></i> CHECK IN
+            </button>
+            <button class="btn btn-danger btn-lg" id="btn-quick-checkout">
+              <i class="fa-solid fa-right-from-bracket"></i> CHECK OUT
+            </button>
+          </div>
+        </div>
+
+        <!-- Spreadsheet Filter & Search Toolbar -->
+        <div class="excel-toolbar">
+          <div class="toolbar-filters">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="att-filter-search" class="form-control" placeholder="Search ID, Name, Dept..." />
+            </div>
+
+            <input type="date" id="att-filter-date" class="form-control filter-select" title="Filter by Specific Date" />
+
+            <select id="att-filter-month" class="form-control filter-select" title="Filter by Month">
+              <option value="">All Months</option>
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+
+            <select id="att-filter-dept" class="form-control filter-select">
+              <option value="">All Departments</option>
+            </select>
+
+            <select id="att-filter-status" class="form-control filter-select">
+              <option value="">All Statuses</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Late">Late</option>
+              <option value="Half Day">Half Day</option>
+              <option value="Leave">Leave</option>
+              <option value="Holiday">Holiday</option>
+            </select>
+
+            <select id="att-filter-employee" class="form-control filter-select">
+              <option value="">All Employees</option>
+            </select>
+          </div>
+
+          <div class="toolbar-actions">
+            <button class="btn btn-secondary btn-sm" id="btn-reset-attendance-filters" title="Reset all filters">
+              <i class="fa-solid fa-arrows-rotate"></i> Reset
+            </button>
+            <button class="btn btn-primary btn-sm" id="btn-add-attendance-quick-row">
+              <i class="fa-solid fa-plus"></i> Add Row
+            </button>
+          </div>
+        </div>
+
+        <!-- Excel Spreadsheet Sheet Wrapper -->
+        <div class="excel-sheet-wrapper">
+          <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Scroll horizontally to view full spreadsheet</div>
+          <div class="excel-table-container">
+            <table class="excel-table" id="attendance-excel-table">
+              <thead>
+                <tr>
+                  <th class="col-sno">S.No</th>
+                  <th class="sortable" data-sort="employeeId">Employee ID <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th class="sortable" data-sort="employeeName">Employee Name <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th class="sortable" data-sort="department">Department <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th class="sortable" data-sort="date">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th class="sortable" data-sort="checkIn">Check In <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th>Check Out</th>
+                  <th>Working Hours</th>
+                  <th class="sortable" data-sort="status">Status <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th>Remarks</th>
+                  <th style="text-align: center; width: 110px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-table-body">
+                <!-- Dynamic rows rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="excel-footer">
+            <span id="attendance-row-counter">Showing 0 records</span>
+            <span>Tip: Click Status or Edit to update check-in/out times. Working hours calculate automatically.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           3. ATTENDANCE MEMBERS VIEW
+           ========================================================== -->
+      <section class="view-pane" id="view-attendance-members">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-users"></i> Company Members / Employee Directory</h1>
+            <p>Maintain the official FROMEX Health Tech employee registry. Members automatically link to attendance and payroll.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" id="btn-open-add-member-modal">
+              <i class="fa-solid fa-user-plus"></i> ADD MEMBER
+            </button>
+            <button class="btn btn-excel" id="btn-export-members-excel">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-print-members">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="excel-toolbar">
+          <div class="toolbar-filters">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="member-filter-search" class="form-control" placeholder="Search by ID, Name, Email, Phone..." />
+            </div>
+
+            <select id="member-filter-dept" class="form-control filter-select">
+              <option value="">All Departments</option>
+            </select>
+
+            <select id="member-filter-status" class="form-control filter-select">
+              <option value="">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div class="toolbar-actions">
+            <button class="btn btn-secondary btn-sm" id="btn-reset-member-filters">
+              <i class="fa-solid fa-arrows-rotate"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Members Table -->
+        <div class="excel-sheet-wrapper">
+          <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Scroll horizontally to view full spreadsheet</div>
+          <div class="excel-table-container">
+            <table class="excel-table" id="members-excel-table">
+              <thead>
+                <tr>
+                  <th class="col-sno">S.No</th>
+                  <th>Employee ID</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Joining Date</th>
+                  <th>Status</th>
+                  <th style="text-align: center; width: 140px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="members-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="excel-footer">
+            <span id="members-row-counter">Showing 0 members</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           4. ACCOUNTING LIST VIEW
+           ========================================================== -->
+      <section class="view-pane" id="view-accounting-list">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-receipt"></i> Company Accounting & Ledger</h1>
+            <p>Excel-style financial transactions sheet with automated GST calculations and real-time account balances.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" id="btn-open-add-transaction-modal">
+              <i class="fa-solid fa-plus"></i> ADD ENTRY
+            </button>
+            <button class="btn btn-excel" id="btn-export-accounting-excel">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-export-accounting-csv">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+            <button class="btn btn-secondary" id="btn-import-accounting-excel">
+              <i class="fa-solid fa-file-arrow-up"></i> Import Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-download-accounting-template">
+              <i class="fa-solid fa-download"></i> Template
+            </button>
+            <button class="btn btn-secondary" id="btn-print-accounting">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="excel-toolbar">
+          <div class="toolbar-filters">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="acc-filter-search" class="form-control" placeholder="Search Txn ID, Description, Party..." />
+            </div>
+
+            <input type="date" id="acc-filter-date" class="form-control filter-select" title="Filter by Date" />
+
+            <select id="acc-filter-type" class="form-control filter-select">
+              <option value="">All Types</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+              <option value="Salary">Salary</option>
+              <option value="Payment">Payment</option>
+              <option value="Receipt">Receipt</option>
+              <option value="Reimbursement">Reimbursement</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <select id="acc-filter-category" class="form-control filter-select">
+              <option value="">All Categories</option>
+            </select>
+
+            <select id="acc-filter-account" class="form-control filter-select">
+              <option value="">All Accounts</option>
+            </select>
+
+            <select id="acc-filter-status" class="form-control filter-select">
+              <option value="">All Statuses</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div class="toolbar-actions">
+            <button class="btn btn-secondary btn-sm" id="btn-reset-accounting-filters">
+              <i class="fa-solid fa-arrows-rotate"></i> Reset
+            </button>
+            <button class="btn btn-primary btn-sm" id="btn-add-accounting-quick-row">
+              <i class="fa-solid fa-plus"></i> Add Row
+            </button>
+          </div>
+        </div>
+
+        <!-- Accounting Excel Table -->
+        <div class="excel-sheet-wrapper">
+          <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Scroll horizontally to view full spreadsheet</div>
+          <div class="excel-table-container">
+            <table class="excel-table" id="accounting-excel-table">
+              <thead>
+                <tr>
+                  <th class="col-sno">S.No</th>
+                  <th class="sortable" data-sort="date">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th>Transaction ID</th>
+                  <th class="sortable" data-sort="type">Type <i class="fa-solid fa-sort sort-icon"></i></th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Employee / Vendor</th>
+                  <th>Account</th>
+                  <th>Amount</th>
+                  <th>Payment Method</th>
+                  <th>GST %</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                  <th style="text-align: center; width: 110px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accounting-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="excel-footer">
+            <span id="accounting-row-counter">Showing 0 entries</span>
+            <span id="accounting-totals-summary">Total Amount: ₹0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           5. ACCOUNTING MEMBERS VIEW
+           ========================================================== -->
+      <section class="view-pane" id="view-accounting-members">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-id-card-clip"></i> Member Financial & Salary Roster</h1>
+            <p>Maintain employee salary structure with automated Gross & Net Salary calculations.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-excel" id="btn-export-salary-excel">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-print-salary">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Accounting Members Table -->
+        <div class="excel-sheet-wrapper">
+          <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Scroll horizontally to view full spreadsheet</div>
+          <div class="excel-table-container">
+            <table class="excel-table" id="salary-excel-table">
+              <thead>
+                <tr>
+                  <th class="col-sno">S.No</th>
+                  <th>Employee ID</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Basic Salary</th>
+                  <th>Allowance</th>
+                  <th>Bonus</th>
+                  <th>Deduction</th>
+                  <th>Advance</th>
+                  <th>Net Salary</th>
+                  <th>Payment Status</th>
+                  <th style="text-align: center; width: 90px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="salary-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="excel-footer">
+            <span id="salary-row-counter">Showing 0 members</span>
+            <span id="salary-totals-summary">Net Payroll: ₹0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           6. COMPANY ACCOUNTS VIEW
+           ========================================================== -->
+      <section class="view-pane" id="view-company-accounts">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-building-columns"></i> Company Treasury & Bank Accounts</h1>
+            <p>Manage corporate bank accounts, petty cash vaults, and digital payment gateways.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" id="btn-open-add-account-modal">
+              <i class="fa-solid fa-plus"></i> ADD ACCOUNT
+            </button>
+            <button class="btn btn-excel" id="btn-export-accounts-excel">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+            <button class="btn btn-secondary" id="btn-print-accounts">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+
+        <div class="excel-sheet-wrapper">
+          <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Scroll horizontally to view full spreadsheet</div>
+          <div class="excel-table-container">
+            <table class="excel-table" id="company-accounts-table">
+              <thead>
+                <tr>
+                  <th class="col-sno">S.No</th>
+                  <th>Account ID</th>
+                  <th>Account Name</th>
+                  <th>Account Type</th>
+                  <th>Bank Name</th>
+                  <th>Account Number</th>
+                  <th>Opening Balance</th>
+                  <th>Current Balance</th>
+                  <th>Status</th>
+                  <th style="text-align: center; width: 140px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accounts-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="excel-footer">
+            <span id="accounts-row-counter">Showing 0 accounts</span>
+            <span id="accounts-total-balance-display">Total Treasury Balance: ₹0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           7. SETTINGS & SYSTEM VIEW
+           ========================================================== -->
+      <section class="view-pane" id="view-settings">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1><i class="fa-solid fa-gears"></i> System Settings & Data Backup</h1>
+            <p>Configure company parameters, office schedule, and manage full JSON system backups.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Company Profile Settings -->
+          <div class="settings-card">
+            <h3><i class="fa-solid fa-building" style="color: var(--primary);"></i> Company Profile</h3>
+            <form id="form-company-settings">
+              <div class="form-group">
+                <label class="form-label" for="settings-company-name">Company Name</label>
+                <input type="text" id="settings-company-name" class="form-control" value="FROMEX HEALTH TECH" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="settings-logo-url">Logo File / Path</label>
+                <input type="text" id="settings-logo-url" class="form-control" value="logo.png" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="settings-currency">System Currency Symbol</label>
+                <input type="text" id="settings-currency" class="form-control" value="₹" maxlength="5" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="settings-default-gst">Default GST Rate (%)</label>
+                <input type="number" id="settings-default-gst" class="form-control" value="18" min="0" max="100" step="0.5" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="settings-start-time">Office Start Time</label>
+                  <input type="time" id="settings-start-time" class="form-control" value="09:00" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="settings-end-time">Office End Time</label>
+                  <input type="time" id="settings-end-time" class="form-control" value="18:00" required />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">
+                <i class="fa-solid fa-floppy-disk"></i> Save Settings
+              </button>
+            </form>
+          </div>
+
+          <!-- Backup & Restore -->
+          <div class="settings-card">
+            <h3><i class="fa-solid fa-database" style="color: var(--secondary);"></i> Backup & Restore</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              Download a complete snapshot of all employees, attendance logs, accounts, and financial transactions into a portable JSON backup file.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div>
+                <button class="btn btn-success" id="btn-export-backup" style="width: 100%;">
+                  <i class="fa-solid fa-cloud-arrow-down"></i> EXPORT COMPLETE BACKUP (JSON)
+                </button>
+              </div>
+
+              <div style="border-top: 1px dashed var(--border-color); padding-top: 1rem;">
+                <label class="form-label" style="display: block; margin-bottom: 0.5rem;">Restore from JSON Backup File</label>
+                <input type="file" id="input-restore-backup" accept=".json" class="form-control" style="margin-bottom: 0.75rem;" />
+                <button class="btn btn-secondary" id="btn-trigger-restore" style="width: 100%;">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> IMPORT BACKUP & RESTORE
+                </button>
+              </div>
+
+              <div style="border-top: 1px dashed var(--border-color); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.65rem;">
+                <button class="btn btn-danger" id="btn-clear-all-data" style="width: 100%; font-weight: 700; background-color: #dc2626; color: white;">
+                  <i class="fa-solid fa-triangle-exclamation"></i> CLEAR ALL DATA (WIPE DATABASE)
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-reset-demo-data" style="width: 100%;">
+                  <i class="fa-solid fa-rotate-left"></i> Reset / Load Sample Demo Data
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Management -->
+          <div class="settings-card">
+            <h3><i class="fa-solid fa-tags" style="color: #6366f1;"></i> Custom Accounting Categories</h3>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+              <input type="text" id="input-new-category" class="form-control" placeholder="New category name..." />
+              <button class="btn btn-primary" id="btn-add-category">Add</button>
+            </div>
+            <div id="categories-badge-list" style="display: flex; flex-wrap: wrap; gap: 0.45rem;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================
+       MODALS SYSTEM
+       ========================================================== -->
+
+  <!-- 1. Add / Edit Member Modal -->
+  <div class="modal-overlay" id="modal-member">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-member-title"><i class="fa-solid fa-user-plus"></i> Add Company Member</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="form-member">
+        <input type="hidden" id="member-edit-id" />
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="member-emp-id">Employee ID <span class="required">*</span></label>
+              <input type="text" id="member-emp-id" class="form-control" placeholder="e.g. FX-1001" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="member-name">Full Name <span class="required">*</span></label>
+              <input type="text" id="member-name" class="form-control" placeholder="e.g. Rahul Sharma" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="member-dept">Department <span class="required">*</span></label>
+              <input type="text" id="member-dept" class="form-control" placeholder="e.g. Technology & AI" list="datalist-departments" required />
+              <datalist id="datalist-departments">
+                <option value="Technology & AI">
+                <option value="Clinical Operations">
+                <option value="Human Resources">
+                <option value="Finance & Accounts">
+                <option value="Operations & Logistics">
+                <option value="Executive Management">
+              </datalist>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="member-desig">Designation <span class="required">*</span></label>
+              <input type="text" id="member-desig" class="form-control" placeholder="Select or type designation..." list="datalist-designations" required />
+              <datalist id="datalist-designations">
+                <option value="Chief Executive Officer">
+                <option value="Lead AI Healthcare Engineer">
+                <option value="Senior Full-Stack Developer">
+                <option value="Clinical Workflow Specialist">
+                <option value="HR & People Operations Manager">
+                <option value="Senior Accounts Officer">
+                <option value="Healthcare Operations Lead">
+                <option value="AI & Data Science Intern">
+                <option value="Logistics Associate">
+                <option value="Medical Informatics Consultant">
+                <option value="Operations Executive">
+              </datalist>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="member-phone">Phone Number</label>
+              <input type="tel" id="member-phone" class="form-control" placeholder="+91-98765-43210" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="member-email">Email Address</label>
+              <input type="email" id="member-email" class="form-control" placeholder="name@fromexhealthtech.com" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="member-joining">Joining Date <span class="required">*</span></label>
+              <input type="date" id="member-joining" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="member-status">Employment Status <span class="required">*</span></label>
+              <select id="member-status" class="form-control" required>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-member">Save Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. View Member Details Modal -->
+  <div class="modal-overlay" id="modal-view-member">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-address-card"></i> Employee Profile</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body" id="view-member-content">
+        <!-- Injected by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Add / Edit Attendance Modal -->
+  <div class="modal-overlay" id="modal-attendance">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-attendance-title"><i class="fa-solid fa-calendar-check"></i> Attendance Record</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="form-attendance">
+        <input type="hidden" id="attendance-edit-id" />
+        <div class="modal-body">
+          <div id="att-no-members-alert" style="display: none; background: var(--status-late-bg); border: 1px solid var(--status-late-border); color: var(--status-late-text); padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; justify-content: space-between; align-items: center;">
+            <span><i class="fa-solid fa-triangle-exclamation"></i> No active members found! Please add a member first.</span>
+            <button type="button" class="btn btn-sm btn-primary" id="att-btn-add-member-first">
+              <i class="fa-solid fa-user-plus"></i> + Add Member
+            </button>
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label class="form-label" for="att-employee-select" style="margin: 0;">Employee <span class="required">*</span></label>
+              <button type="button" id="att-btn-quick-add-member" style="font-size: 0.78rem; font-weight: 600; color: var(--primary); text-decoration: underline; background: none; border: none; cursor: pointer;">
+                <i class="fa-solid fa-user-plus"></i> + Add New Member
+              </button>
+            </div>
+            <select id="att-employee-select" class="form-control" required>
+              <!-- Filled with Active Members -->
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="att-date">Date <span class="required">*</span></label>
+              <input type="date" id="att-date" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="att-status">Status <span class="required">*</span></label>
+              <select id="att-status" class="form-control" required>
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="Late">Late</option>
+                <option value="Half Day">Half Day</option>
+                <option value="Leave">Leave</option>
+                <option value="Holiday">Holiday</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="att-checkin">Check In Time</label>
+              <input type="time" id="att-checkin" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="att-checkout">Check Out Time</label>
+              <input type="time" id="att-checkout" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Calculated Working Hours</label>
+            <div id="att-calc-hours" style="font-weight: 700; color: var(--primary); font-size: 1.1rem; padding: 0.35rem 0;">---</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="att-remarks">Remarks</label>
+            <input type="text" id="att-remarks" class="form-control" placeholder="e.g. Regular on-time, Client deployment visit" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-attendance">Save Attendance</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add / Edit Accounting Entry Modal -->
+  <div class="modal-overlay" id="modal-transaction">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-transaction-title"><i class="fa-solid fa-money-bill-transfer"></i> Add Accounting Entry</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="form-transaction">
+        <input type="hidden" id="txn-edit-id" />
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="txn-date">Date <span class="required">*</span></label>
+              <input type="date" id="txn-date" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txn-id">Transaction ID</label>
+              <input type="text" id="txn-id" class="form-control" placeholder="Auto-generated if blank" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txn-type">Transaction Type <span class="required">*</span></label>
+              <select id="txn-type" class="form-control" required>
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+                <option value="Salary">Salary</option>
+                <option value="Payment">Payment</option>
+                <option value="Receipt">Receipt</option>
+                <option value="Reimbursement">Reimbursement</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="txn-no-accounts-alert" style="display: none; background: var(--status-late-bg); border: 1px solid var(--status-late-border); color: var(--status-late-text); padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; justify-content: space-between; align-items: center;">
+            <span><i class="fa-solid fa-triangle-exclamation"></i> No company accounts found! Please create a bank/cash account first.</span>
+            <button type="button" class="btn btn-sm btn-primary" id="txn-btn-create-acc-first">
+              <i class="fa-solid fa-building-columns"></i> + Add Account
+            </button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <label class="form-label" for="txn-category" style="margin: 0;">Category <span class="required">*</span></label>
+                <button type="button" id="txn-btn-quick-add-cat" style="font-size: 0.78rem; font-weight: 600; color: var(--primary); text-decoration: underline; background: none; border: none; cursor: pointer;">
+                  <i class="fa-solid fa-plus"></i> + Category
+                </button>
+              </div>
+              <select id="txn-category" class="form-control" required>
+                <!-- Populated dynamically with categories -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txn-party">Employee / Vendor / Client</label>
+              <input type="text" id="txn-party" class="form-control" placeholder="Select employee or type vendor..." list="datalist-parties" />
+              <datalist id="datalist-parties">
+                <!-- Populated dynamically with employees -->
+              </datalist>
+            </div>
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <label class="form-label" for="txn-account" style="margin: 0;">Company Account <span class="required">*</span></label>
+                <button type="button" id="txn-btn-quick-add-acc" style="font-size: 0.78rem; font-weight: 600; color: var(--primary); text-decoration: underline; background: none; border: none; cursor: pointer;">
+                  <i class="fa-solid fa-plus"></i> + Account
+                </button>
+              </div>
+              <select id="txn-account" class="form-control" required>
+                <!-- Populated dynamically with accounts -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="txn-desc">Description <span class="required">*</span></label>
+            <input type="text" id="txn-desc" class="form-control" placeholder="e.g. Monthly cloud server fee or clinic deployment" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="txn-amount">Base Amount (₹) <span class="required">*</span></label>
+              <input type="number" id="txn-amount" class="form-control" min="0" step="0.01" placeholder="0.00" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txn-gst">GST Rate (%)</label>
+              <input type="number" id="txn-gst" class="form-control" min="0" max="100" step="0.1" value="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txn-method">Payment Method</label>
+              <select id="txn-method" class="form-control">
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="UPI">UPI</option>
+                <option value="Cash">Cash</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Card">Card</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Computed GST & Total Banner -->
+          <div style="background-color: var(--bg-surface-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">GST Amount:</span>
+              <strong id="txn-calc-gst" style="margin-left: 0.35rem; color: var(--text-main);">₹0.00</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Total Amount:</span>
+              <strong id="txn-calc-total" style="font-size: 1.2rem; color: var(--primary); margin-left: 0.5rem;">₹0.00</strong>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="txn-status">Payment Status</label>
+              <select id="txn-status" class="form-control">
+                <option value="Completed">Completed</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txn-remarks">Remarks</label>
+              <input type="text" id="txn-remarks" class="form-control" placeholder="Additional reference / invoice #" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-transaction">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Edit Accounting Member (Salary) Modal -->
+  <div class="modal-overlay" id="modal-salary">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calculator"></i> Edit Member Salary Structure</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="form-salary">
+        <input type="hidden" id="sal-member-id" />
+        <div class="modal-body">
+          <div style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+            <h4 id="sal-emp-name" style="font-size: 1.05rem; font-weight: 700;">Employee Name</h4>
+            <span id="sal-emp-meta" style="font-size: 0.8rem; color: var(--text-muted);">EMP001 &bull; Technology</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="sal-basic">Basic Salary (₹)</label>
+              <input type="number" id="sal-basic" class="form-control" min="0" step="100" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sal-allowance">Allowance (₹)</label>
+              <input type="number" id="sal-allowance" class="form-control" min="0" step="100" value="0" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="sal-bonus">Bonus (₹)</label>
+              <input type="number" id="sal-bonus" class="form-control" min="0" step="100" value="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sal-deduction">Deduction (₹)</label>
+              <input type="number" id="sal-deduction" class="form-control" min="0" step="100" value="0" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="sal-advance">Advance (₹)</label>
+              <input type="number" id="sal-advance" class="form-control" min="0" step="100" value="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sal-status">Payment Status</label>
+              <select id="sal-status" class="form-control">
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+                <option value="Partially Paid">Partially Paid</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Computation Result -->
+          <div style="background-color: var(--bg-surface-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem; margin-top: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.35rem;">
+              <span>Gross Salary:</span>
+              <strong id="sal-calc-gross">₹0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1rem; color: var(--primary); font-weight: 800; border-top: 1px solid var(--border-color); padding-top: 0.35rem;">
+              <span>Net Salary:</span>
+              <span id="sal-calc-net">₹0</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Salary</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. Add / Edit Company Account Modal -->
+  <div class="modal-overlay" id="modal-account">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-account-title"><i class="fa-solid fa-building-columns"></i> Company Account</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <form id="form-account">
+        <input type="hidden" id="acc-edit-id" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="acc-name">Account Name <span class="required">*</span></label>
+            <input type="text" id="acc-name" class="form-control" placeholder="e.g. HDFC Main Operating Account" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="acc-type">Account Type <span class="required">*</span></label>
+              <select id="acc-type" class="form-control" required>
+                <option value="Bank">Bank</option>
+                <option value="Cash">Cash</option>
+                <option value="Petty Cash">Petty Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acc-bank-name">Bank Name</label>
+              <input type="text" id="acc-bank-name" class="form-control" placeholder="e.g. HDFC Bank Ltd" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="acc-number">Account / UPI Number</label>
+              <input type="text" id="acc-number" class="form-control" placeholder="e.g. 50200012345678" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acc-opening-bal">Opening Balance (₹) <span class="required">*</span></label>
+              <input type="number" id="acc-opening-bal" class="form-control" step="0.01" value="0.00" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="acc-status">Status</label>
+            <select id="acc-status" class="form-control">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-account">Save Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. View Account Transactions Modal -->
+  <div class="modal-overlay" id="modal-account-txns">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-acc-txns-title"><i class="fa-solid fa-list-check"></i> Account Transactions</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface-subtle); padding: 0.85rem; border-radius: var(--radius-md);">
+          <div>
+            <strong id="modal-acc-txns-name" style="font-size: 1.05rem;">Account Name</strong>
+            <div id="modal-acc-txns-info" style="font-size: 0.8rem; color: var(--text-muted);">Account Details</div>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Current Balance:</span>
+            <strong id="modal-acc-txns-balance" style="font-size: 1.25rem; color: var(--primary); margin-left: 0.5rem;">₹0</strong>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto; max-height: 400px;">
+          <table class="excel-table" style="font-size: 0.8rem;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Txn ID</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Party</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="modal-acc-txns-tbody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Excel Import Preview Modal -->
+  <div class="modal-overlay" id="modal-import-excel">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-import-title"><i class="fa-solid fa-file-excel"></i> Import Excel (.xlsx) Data</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="form-control" style="margin-bottom: 1rem;" />
+
+        <div id="import-preview-status" style="margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+          Please select a valid .xlsx or .csv file matching the template.
+        </div>
+
+        <div id="import-preview-container" style="display: none;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">
+            Data Preview (<span id="import-record-count">0</span> valid records found)
+          </h4>
+          <div style="overflow-x: auto; max-height: 320px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+            <table class="excel-table" id="import-preview-table" style="font-size: 0.78rem;">
+              <thead id="import-preview-thead"></thead>
+              <tbody id="import-preview-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>Cancel</button>
+        <button type="button" class="btn btn-success" id="btn-confirm-excel-import" disabled>
+          <i class="fa-solid fa-check"></i> Confirm & Import Records
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Universal Confirmation Modal -->
+  <div class="modal-overlay" id="modal-confirm">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="confirm-modal-title"><i class="fa-solid fa-circle-question" style="color: var(--primary);"></i> Confirm Action</h3>
+        <button class="modal-close-btn" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-modal-message" style="font-size: 0.92rem; color: var(--text-main);">
+          Are you sure you want to proceed?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-confirm-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-proceed">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar (Mobile Screens Only) -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+    <button type="button" class="bottom-nav-item active" data-view="dashboard" id="bnav-dashboard">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Dashboard</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-view="attendance-list" id="bnav-attendance">
+      <i class="fa-solid fa-calendar-days"></i>
+      <span>Attendance</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-view="accounting-list" id="bnav-accounting">
+      <i class="fa-solid fa-file-invoice-dollar"></i>
+      <span>Accounting</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-view="attendance-members" id="bnav-members">
+      <i class="fa-solid fa-users"></i>
+      <span>Members</span>
+    </button>
+    <button type="button" class="bottom-nav-item" id="bnav-more" title="More Menu & Settings">
+      <i class="fa-solid fa-bars"></i>
+      <span>More</span>
+    </button>
+  </nav>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Application Logic -->
+  <script src="script.js"></script>
+</body>
 </html>

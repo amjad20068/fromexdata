@@ -683,8 +683,9 @@ export function seedDatabase() {
   const insertInv = db.prepare(`
     INSERT INTO invoices (
       id, invoice_number, invoice_date, due_date, customer_name, customer_email, customer_address,
-      gst_number, taxable_amount, gst_rate, cgst, sgst, igst, discount, grand_total, payment_status, notes
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      gst_number, taxable_amount, gst_rate, cgst, sgst, igst, discount, grand_total, payment_status, notes,
+      contract_type, billing_frequency
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const insertInvItem = db.prepare(`
@@ -696,7 +697,7 @@ export function seedDatabase() {
   insertInv.run(
     'INV-001', 'FX-INV-2026-001', '2026-08-25', '2026-09-10', 'Aster Medcity Multi-Specialty Clinic', 'billing@astermedcity.org',
     'Chundale Medical Enclave, Wayanad, Kerala - 673123', '32AABCA8765E1ZG', 381355.93, 18, 34322.03, 34322.03, 0, 0, 450000, 'Paid',
-    'Implementation and setup of FROMEX Clinic Workflow AI Suite Q3'
+    'Implementation and setup of FROMEX Clinic Workflow AI Suite Q3', 'SaaS Subscription', 'Annual'
   );
   insertInvItem.run('ITEM-001-1', 'INV-001', 'FROMEX AI Clinical Workflow Software License (Annual)', 1, 280000, 280000);
   insertInvItem.run('ITEM-001-2', 'INV-001', 'On-site Doctor & Nursing Staff Digitization Training', 2, 35000, 70000);
@@ -706,7 +707,7 @@ export function seedDatabase() {
   insertInv.run(
     'INV-002', 'FX-INV-2026-002', '2026-09-02', '2026-09-22', 'DM Wayanad Institute of Medical Sciences (WIMS)', 'finance@wimswayanad.com',
     'Naseera Nagar, Meppadi P.O., Wayanad, Kerala - 673577', '32AABTD9482F1ZF', 550847.46, 18, 49576.27, 49576.27, 0, 0, 650000, 'Partially Paid',
-    'AI-powered OPD Queue Optimization and Bed Allocation Engine'
+    'AI-powered OPD Queue Optimization and Bed Allocation Engine', 'Software AMC', 'Annual'
   );
   insertInvItem.run('ITEM-002-1', 'INV-002', 'FROMEX Hospital Operational Intelligence Platform v2.4', 1, 450000, 450000);
   insertInvItem.run('ITEM-002-2', 'INV-002', 'Custom IoT Sensor Gateway Integration for 12 ICU Beds', 1, 100847.46, 100847.46);
@@ -715,7 +716,7 @@ export function seedDatabase() {
   insertInv.run(
     'INV-003', 'FX-INV-2026-003', '2026-09-12', '2026-09-27', 'Malabar Health Tech Diagnostics', 'accounts@malabarhealth.com',
     'Mavoor Road, Kozhikode, Kerala - 673004', '32AAECM4910K1ZD', 186440.68, 18, 16779.66, 16779.66, 0, 0, 220000, 'Sent',
-    'Cloud Pathology Report Analyzer & AI Summary Module'
+    'Cloud Pathology Report Analyzer & AI Summary Module', 'SaaS Subscription', 'Monthly'
   );
   insertInvItem.run('ITEM-003-1', 'INV-003', 'AI Pathology Report Summary Engine Module', 1, 186440.68, 186440.68);
 

@@ -18,7 +18,7 @@ import {
   Repeat
 } from 'lucide-react';
 import { api } from '../api/client';
-import { Invoice, InvoiceItem } from '../types';
+import { Invoice, InvoiceItem, ContractType, BillingFrequency, InvoicePaymentStatus, InvoiceFormData } from '../types';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
@@ -39,7 +39,7 @@ export const Invoices: React.FC = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
   // Invoice Form
-  const initialForm = {
+  const initialForm: InvoiceFormData = {
     invoice_number: `FX-INV-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
     invoice_date: new Date().toISOString().split('T')[0],
     due_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -49,12 +49,12 @@ export const Invoices: React.FC = () => {
     gst_number: '',
     discount: 0,
     gst_rate: 18,
-    contract_type: 'SaaS Subscription' as const,
-    billing_frequency: 'Annual' as const,
-    payment_status: 'Sent' as const,
+    contract_type: 'SaaS Subscription',
+    billing_frequency: 'Annual',
+    payment_status: 'Sent',
     notes: 'Includes software version upgrades, security patches, and 99.9% uptime SLA under FROMEX Health Tech Master Services Agreement.',
   };
-  const [formData, setFormData] = useState(initialForm);
+  const [formData, setFormData] = useState<InvoiceFormData>(initialForm);
 
   const [lineItems, setLineItems] = useState<InvoiceItem[]>([
     { description: 'FROMEX AI Clinical Workflow Platform - Enterprise Cloud Tier (50 Doctor Seats, FHIR Cloud)', quantity: 1, rate: 280000, amount: 280000 },
@@ -128,7 +128,7 @@ export const Invoices: React.FC = () => {
     setLineItems([...lineItems, { description: '', quantity: 1, rate: 0, amount: 0 }]);
   };
 
-  const handleItemChange = (index: number, field: keyof InvoiceItem, val: any) => {
+  const handleItemChange = (index: number, field: keyof InvoiceItem, val: string | number) => {
     const next = [...lineItems];
     next[index] = { ...next[index], [field]: val };
     if (field === 'quantity' || field === 'rate') {
@@ -172,7 +172,7 @@ export const Invoices: React.FC = () => {
     }
   };
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
+  const handleStatusChange = async (id: string, newStatus: InvoicePaymentStatus) => {
     try {
       await api.patch(`/invoices/${id}/status`, { payment_status: newStatus });
       showToast({ type: 'success', message: `Invoice marked as ${newStatus}` });
@@ -481,7 +481,7 @@ export const Invoices: React.FC = () => {
               <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Contract Category *</label>
               <select
                 value={formData.contract_type}
-                onChange={e => setFormData({ ...formData, contract_type: e.target.value as any })}
+                onChange={e => setFormData({ ...formData, contract_type: e.target.value as ContractType })}
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold"
               >
                 <option value="SaaS Subscription">🚀 SaaS Cloud Subscription</option>
@@ -496,7 +496,7 @@ export const Invoices: React.FC = () => {
               <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Billing Frequency</label>
               <select
                 value={formData.billing_frequency}
-                onChange={e => setFormData({ ...formData, billing_frequency: e.target.value as any })}
+                onChange={e => setFormData({ ...formData, billing_frequency: e.target.value as BillingFrequency })}
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold"
               >
                 <option value="Monthly">Monthly Recurring</option>
