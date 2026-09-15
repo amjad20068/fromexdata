@@ -513,35 +513,80 @@
   // ==========================================================
   const Navigation = {
     init: function () {
+      const sidebar = document.getElementById('app-sidebar');
+      const toggleBtn = document.getElementById('btn-sidebar-toggle');
+      const overlay = document.getElementById('sidebar-overlay');
+      const closeBtn = document.getElementById('btn-sidebar-close');
+
+      const closeSidebar = () => {
+        sidebar?.classList.remove('mobile-open');
+        overlay?.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+      };
+
+      const openSidebar = () => {
+        sidebar?.classList.add('mobile-open');
+        overlay?.classList.add('active');
+        document.body.classList.add('sidebar-open');
+      };
+
+      const toggleMobileSidebar = () => {
+        if (sidebar?.classList.contains('mobile-open')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      };
+
+      // Sidebar Navigation Links
       const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
       navItems.forEach(item => {
         item.addEventListener('click', (e) => {
           e.preventDefault();
           const targetView = item.getAttribute('data-view');
-          this.switchView(targetView);
+          if (targetView) {
+            this.switchView(targetView);
+            closeSidebar();
+          }
         });
       });
 
-      // Sidebar Toggle
-      const sidebar = document.getElementById('app-sidebar');
-      const toggleBtn = document.getElementById('btn-sidebar-toggle');
-      const overlay = document.getElementById('sidebar-overlay');
-
+      // Sidebar Toggle & Close Buttons
       if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener('click', () => {
+        toggleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
           if (window.innerWidth <= 992) {
-            sidebar.classList.toggle('mobile-open');
-            overlay?.classList.toggle('active');
+            toggleMobileSidebar();
           } else {
             sidebar.classList.toggle('collapsed');
           }
         });
       }
 
-      overlay?.addEventListener('click', () => {
-        sidebar?.classList.remove('mobile-open');
-        overlay.classList.remove('active');
+      closeBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeSidebar();
       });
+
+      overlay?.addEventListener('click', () => {
+        closeSidebar();
+      });
+
+      // User profile badge click -> opens settings
+      const userProfileBtn = document.getElementById('btn-user-profile');
+      if (userProfileBtn) {
+        userProfileBtn.addEventListener('click', () => {
+          this.switchView('settings');
+          closeSidebar();
+        });
+        userProfileBtn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.switchView('settings');
+            closeSidebar();
+          }
+        });
+      }
 
       // Quick links on Dashboard
       document.getElementById('dash-btn-add-member')?.addEventListener('click', () => {
@@ -628,19 +673,28 @@
       document.querySelectorAll('.bottom-nav-item[data-view]').forEach(item => {
         item.addEventListener('click', () => {
           const view = item.getAttribute('data-view');
-          if (view) this.switchView(view);
+          if (view) {
+            this.switchView(view);
+            closeSidebar();
+          }
         });
       });
 
-      document.getElementById('bnav-more')?.addEventListener('click', () => {
-        const sidebar = document.getElementById('app-sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        sidebar?.classList.toggle('mobile-open');
-        overlay?.classList.toggle('active');
+      document.getElementById('bnav-more')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleMobileSidebar();
+      });
+
+      // Global keyboard dismissal
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeSidebar();
+        }
       });
     },
 
     switchView: function (viewId) {
+      // Update sidebar active link
       document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
         if (item.getAttribute('data-view') === viewId) {
           item.classList.add('active');
@@ -650,6 +704,7 @@
       });
 
       // Update mobile bottom nav active item
+      const mainBottomViews = ['dashboard', 'attendance-list', 'accounting-list', 'attendance-members'];
       document.querySelectorAll('.bottom-nav-item').forEach(btn => {
         if (btn.getAttribute('data-view') === viewId) {
           btn.classList.add('active');
@@ -658,6 +713,16 @@
         }
       });
 
+      const moreBtn = document.getElementById('bnav-more');
+      if (moreBtn) {
+        if (!mainBottomViews.includes(viewId)) {
+          moreBtn.classList.add('active');
+        } else {
+          moreBtn.classList.remove('active');
+        }
+      }
+
+      // Switch active view pane
       document.querySelectorAll('.view-pane').forEach(pane => {
         pane.classList.remove('active');
       });
@@ -677,9 +742,10 @@
         if (viewId === 'settings') SettingsModule.render();
       }
 
-      // Close mobile sidebar if open
+      // Ensure mobile sidebar is closed after switching
       document.getElementById('app-sidebar')?.classList.remove('mobile-open');
       document.getElementById('sidebar-overlay')?.classList.remove('active');
+      document.body.classList.remove('sidebar-open');
     }
   };
 
@@ -3296,7 +3362,7 @@
         const h = String(now.getHours()).padStart(2, '0');
         const min = String(now.getMinutes()).padStart(2, '0');
         const sec = String(now.getSeconds()).padStart(2, '0');
-        dateTextEl.textContent = `${day}, ${d} ${m} ${y} • ${h}:${min}:${sec}`;
+        dateTextEl.innerHTML = `<span class="date-full">${day}, ${d} ${m} ${y} • ${h}:${min}:${sec}</span><span class="date-compact">${d} ${m} • ${h}:${min}</span>`;
       };
       update();
       setInterval(update, 1000);
@@ -3304,7 +3370,7 @@
   };
 
   // ==========================================================
-  // GLOBAL MODAL CLOSE HANDLERS
+  // GLOBAL MODAL CLOSE HANDLERS & MOBILE BODY SCROLL LOCK
   // ==========================================================
   function setupModalDismissals() {
     document.querySelectorAll('[data-close-modal]').forEach(btn => {
@@ -3312,6 +3378,7 @@
         e.preventDefault();
         const modal = btn.closest('.modal-overlay');
         if (modal) modal.classList.remove('active');
+        document.body.classList.remove('modal-open');
       });
     });
 
@@ -3319,6 +3386,7 @@
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
           overlay.classList.remove('active');
+          document.body.classList.remove('modal-open');
         }
       });
     });
@@ -3328,8 +3396,24 @@
         document.querySelectorAll('.modal-overlay.active').forEach(modal => {
           modal.classList.remove('active');
         });
+        document.body.classList.remove('modal-open');
       }
     });
+
+    // Auto body scroll-lock observer for mobile modals
+    try {
+      const modalObserver = new MutationObserver(() => {
+        const anyActive = document.querySelector('.modal-overlay.active');
+        if (anyActive) {
+          document.body.classList.add('modal-open');
+        } else {
+          document.body.classList.remove('modal-open');
+        }
+      });
+      document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modalObserver.observe(modal, { attributes: true, attributeFilter: ['class'] });
+      });
+    } catch (_) {}
   }
 
   // ==========================================================

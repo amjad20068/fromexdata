@@ -52,7 +52,7 @@
         <i class="fa-solid fa-moon" id="theme-icon"></i>
       </button>
 
-      <div class="user-badge" id="btn-user-profile" title="Administrator Profile">
+      <div class="user-badge" id="btn-user-profile" role="button" tabindex="0" title="Administrator Profile - Open Settings" aria-label="User Profile">
         <div class="user-avatar">AD</div>
         <span class="user-name">Admin</span>
       </div>
@@ -68,6 +68,20 @@
 
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="app-sidebar">
+      <!-- Mobile Sidebar Header (Shown on Mobile Drawer) -->
+      <div class="sidebar-mobile-header" id="sidebar-mobile-header">
+        <div class="sidebar-mobile-brand">
+          <img src="logo.png" alt="FROMEX Logo" class="sidebar-mobile-logo" />
+          <div class="sidebar-mobile-brand-info">
+            <span class="sidebar-mobile-title">FROMEX ERP</span>
+            <span class="sidebar-mobile-sub">Health Tech Suite</span>
+          </div>
+        </div>
+        <button type="button" class="sidebar-close-btn" id="btn-sidebar-close" aria-label="Close Sidebar" title="Close Menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
       <nav class="sidebar-nav">
         <!-- Main Dashboard -->
         <a class="nav-item active" data-view="dashboard" id="nav-dashboard">

@@ -14,7 +14,8 @@ import {
   LogOut,
   ChevronRight,
   Sparkles,
-  Building2
+  Building2,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -83,19 +84,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Brand Header */}
-        <div className="flex items-center gap-3 px-6 h-20 border-b border-slate-100 dark:border-slate-800/80">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#0057b8] to-[#00b4a6] flex items-center justify-center shadow-md shadow-blue-500/20 text-white font-black text-xl">
-            <Building2 className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">FROMEX</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                ERP
-              </span>
+        <div className="flex items-center justify-between px-6 h-20 border-b border-slate-100 dark:border-slate-800/80">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#0057b8] to-[#00b4a6] flex items-center justify-center shadow-md shadow-blue-500/20 text-white font-black text-xl">
+              <Building2 className="w-6 h-6" />
             </div>
-            <span className="text-xs text-slate-400 font-medium">Health Tech Pvt Ltd</span>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">FROMEX</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                  ERP
+                </span>
+              </div>
+              <span className="text-xs text-slate-400 font-medium">Health Tech Pvt Ltd</span>
+            </div>
           </div>
+          <button
+            onClick={onToggle}
+            className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation items */}
